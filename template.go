@@ -1,8 +1,9 @@
 // Copyright 2017 Danny van Kooten. All rights reserved.
+// Copyright 2020 Jim Kalafut.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package extemplate
+package entemplate
 
 import (
 	"bytes"
@@ -22,9 +23,9 @@ import (
 var staticTemplates string
 var extendsRegex *regexp.Regexp
 
-// Extemplate holds a reference to all templates
+// Entemplate holds a reference to all templates
 // and shared configuration like Delims or FuncMap
-type Extemplate struct {
+type Entemplate struct {
 	shared       *template.Template
 	sharedBackup *template.Template
 	templates    map[string]*template.Template
@@ -48,9 +49,9 @@ func init() {
 }
 
 // New allocates a new, empty, template map
-func New() *Extemplate {
+func New() *Entemplate {
 	shared := template.New("")
-	return &Extemplate{
+	return &Entemplate{
 		shared:    shared,
 		templates: make(map[string]*template.Template),
 	}
@@ -61,7 +62,7 @@ func New() *Extemplate {
 // Nested template  definitions will inherit the settings.
 // An empty delimiter stands for the corresponding default: {{ or }}.
 // The return value is the template, so calls can be chained.
-func (x *Extemplate) Delims(left, right string) *Extemplate {
+func (x *Entemplate) Delims(left, right string) *Entemplate {
 	x.shared.Delims(left, right)
 	return x
 }
@@ -70,16 +71,16 @@ func (x *Extemplate) Delims(left, right string) *Extemplate {
 // It must be called before templates are parsed
 // It panics if a value in the map is not a function with appropriate return
 // type or if the name cannot be used syntactically as a function in a template.
-// It is legal to overwrite elements of the map. The return value is the Extemplate instance,
+// It is legal to overwrite elements of the map. The return value is the Entemplate instance,
 // so calls can be chained.
-func (x *Extemplate) Funcs(funcMap template.FuncMap) *Extemplate {
+func (x *Entemplate) Funcs(funcMap template.FuncMap) *Entemplate {
 	x.shared.Funcs(funcMap)
 	return x
 }
 
 // Lookup returns the template with the given name
 // It returns nil if there is no such template or the template has no definition.
-func (x *Extemplate) Lookup(name string) *template.Template {
+func (x *Entemplate) Lookup(name string) *template.Template {
 	if t, ok := x.templates[name]; ok {
 		return t
 	}
@@ -90,7 +91,7 @@ func (x *Extemplate) Lookup(name string) *template.Template {
 // AutoReload configures whether the templates will be automatically reloaded
 // from disk when they change. This setting has no effect when static templates
 // are compiled into the source.
-func (x *Extemplate) AutoReload(reload bool) {
+func (x *Entemplate) AutoReload(reload bool) {
 	x.autoReload = reload
 }
 
@@ -100,7 +101,7 @@ func (x *Extemplate) AutoReload(reload bool) {
 // wrapper also supports providing key/value pairs as individual arguments. e.g.
 //
 // tpl.ExecuteTemplate(w, "template.html", "name", "Bob", "age", 42)
-func (x *Extemplate) ExecuteTemplate(wr io.Writer, name string, data ...interface{}) error {
+func (x *Entemplate) ExecuteTemplate(wr io.Writer, name string, data ...interface{}) error {
 	if staticTemplates == "" && x.autoReload {
 		if err := x.reloadTemplates(); err != nil {
 			return err
@@ -140,7 +141,7 @@ func (x *Extemplate) ExecuteTemplate(wr io.Writer, name string, data ...interfac
 // Default extensions are .html and .tmpl
 // If a template file has {{/* extends "other-file.tmpl" */}} as its first line it will parse that file for base templates.
 // Parsed templates are named relative to the given root directory
-func (x *Extemplate) ParseDir(root string, extensions []string) error {
+func (x *Entemplate) ParseDir(root string, extensions []string) error {
 	files := make(map[string]*templatefile)
 
 	x.root = root
@@ -180,7 +181,7 @@ func (x *Extemplate) ParseDir(root string, extensions []string) error {
 	return x.parseTemplates(files)
 }
 
-func (x *Extemplate) ParseStatic(templates string) error {
+func (x *Entemplate) ParseStatic(templates string) error {
 	var files map[string]*templatefile
 
 	if err := json.Unmarshal([]byte(templates), &files); err != nil {
@@ -189,7 +190,7 @@ func (x *Extemplate) ParseStatic(templates string) error {
 	return x.parseTemplates(files)
 }
 
-func (x *Extemplate) parseTemplates(files map[string]*templatefile) error {
+func (x *Entemplate) parseTemplates(files map[string]*templatefile) error {
 	var b []byte
 	var err error
 
@@ -316,7 +317,7 @@ func loadTemplateFiles(root string, paths []string) (map[string]*templatefile, e
 	return files, nil
 }
 
-func (x *Extemplate) reloadTemplates() error {
+func (x *Entemplate) reloadTemplates() error {
 	fileList, hash, err := buildFileList(x.root, x.extensions)
 	if err != nil {
 		return err

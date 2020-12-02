@@ -1,3 +1,3 @@
-module github.com/kalafut/extemplate
+module github.com/kalafut/entemplate
 
 go 1.13

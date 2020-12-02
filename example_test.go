@@ -1,15 +1,15 @@
-package extemplate_test
+package entemplate_test
 
 import (
 	"html/template"
 	"os"
 	"strings"
 
-	"github.com/dannyvankooten/extemplate"
+	"github.com/kalafut/entemplate"
 )
 
 func ExampleExtemplate_ParseDir() {
-	xt := extemplate.New().Funcs(template.FuncMap{
+	xt := entemplate.New().Funcs(template.FuncMap{
 		"tolower": strings.ToLower,
 	})
 	_ = xt.ParseDir("examples/", []string{".tmpl"})

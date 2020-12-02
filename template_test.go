@@ -1,4 +1,4 @@
-package extemplate
+package entemplate
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var x *Extemplate
+var x *Entemplate
 var once sync.Once
 
 func setup() {

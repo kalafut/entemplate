@@ -108,10 +108,10 @@ func scanFiles(root string, extensions []string) (string, error) {
 func writeStatic(filename, staticTemplate string) error {
 	tpl := `package %s
 
-import "github.com/dannyvankooten/extemplate"
+import "github.com/kalafut/entemplate"
 
 func init() {
-	extemplate.StaticTemplates(%s)
+	entemplate.StaticTemplates(%s)
 }
 `
 	output := fmt.Sprintf(tpl, *flagPackage, "`"+staticTemplate+"`")

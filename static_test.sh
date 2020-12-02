@@ -3,7 +3,7 @@
 mkdir -p static_tmp
 
 # Statically bundle examples templates
-go run cmd/exstatic/exstatic.go -o static_tmp/static_templates.go examples
+go run cmd/enstatic/enstatic.go -o static_tmp/static_templates.go examples
 cd static_tmp
 
 # Add a go.mod file so we can test the local version of the package
@@ -12,9 +12,9 @@ module static
 
 go 1.13
 
-replace github.com/dannyvankooten/extemplate => ../
+replace github.com/kalafut/entemplate => ../
 
-require github.com/dannyvankooten/extemplate v0.0.0-20180818082729-efbdf6eacd7e
+require github.com/kalafut/entemplate v0.0.0-20180818082729-efbdf6eacd7e
 EOF
 
 cat > static.go <<- EOF
@@ -27,7 +27,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/dannyvankooten/extemplate"
+	"github.com/kalafut/entemplate"
 )
 
 var expected = "Hello from child.tmpl\n\tHello from partials/question.tmpl"
@@ -35,7 +35,7 @@ var expected = "Hello from child.tmpl\n\tHello from partials/question.tmpl"
 func main() {
 	var out bytes.Buffer
 
-	xt := extemplate.New().Funcs(template.FuncMap{
+	xt := entemplate.New().Funcs(template.FuncMap{
 		"tolower": strings.ToLower,
 	})
 	xt.ParseDir("this doesn't matter since they're bundled", []string{".tmpl"})
